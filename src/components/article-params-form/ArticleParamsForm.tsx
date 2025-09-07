@@ -25,12 +25,12 @@ type ArticleParamsFormProps = {
 
 export const ArticleParamsForm = (props: ArticleParamsFormProps) => {
 	const state = props.state;
-	const [isOpen, setIsOpen] = useState<boolean>(false);
+	const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 	const [classNameContainer, setclassNameContainer] = useState<string>(
 		styles.container
 	);
 	function onClickOpen() {
-		setIsOpen((open) => {
+		setIsMenuOpen((open) => {
 			open = !open;
 			if (open) {
 				setclassNameContainer(clsx(styles.container, styles.container_open));
@@ -41,7 +41,7 @@ export const ArticleParamsForm = (props: ArticleParamsFormProps) => {
 		});
 	}
 	function close() {
-		setIsOpen((open) => {
+		setIsMenuOpen((open) => {
 			open = false;
 			setclassNameContainer(clsx(styles.container));
 			return open;
@@ -49,33 +49,35 @@ export const ArticleParamsForm = (props: ArticleParamsFormProps) => {
 	}
 	const rootRef = useRef<HTMLDivElement>(null);
 	useOutsideClickClose({
-		isOpen,
+		isOpen: isMenuOpen,
 		rootRef,
 		onChange: close,
 	});
-
 	const [stateFont, setStateFont] = useState(state.fontFamilyOption);
-
-	function onChangeFontFamily(selected: OptionType): void {
-		setStateFont(selected);
-	}
 	const [stateFontColor, setStateFontColor] = useState(state.fontColor);
-	function onChangeFontColor(selected: OptionType): void {
-		setStateFontColor(selected);
-	}
 	const [stateBackGroundColor, setStateBackGroundColor] = useState(
 		state.backgroundColor
 	);
-	function onChangeBackGroundColor(selected: OptionType): void {
-		setStateBackGroundColor(selected);
-	}
 	const [stateContentWidth, setStateContentWidth] = useState(
 		state.contentWidth
 	);
+	const [stateFontSize, setStateFontSize] = useState(state.fontSizeOption);
+	function onChangeFontFamily(selected: OptionType): void {
+		setStateFont(selected);
+	}
+
+	function onChangeFontColor(selected: OptionType): void {
+		setStateFontColor(selected);
+	}
+
+	function onChangeBackGroundColor(selected: OptionType): void {
+		setStateBackGroundColor(selected);
+	}
+
 	function onChangeContentWidth(selected: OptionType): void {
 		setStateContentWidth(selected);
 	}
-	const [stateFontSize, setStateFontSize] = useState(state.fontSizeOption);
+
 	function onChangeFontSize(selected: OptionType): void {
 		setStateFontSize(selected);
 	}
@@ -98,6 +100,19 @@ export const ArticleParamsForm = (props: ArticleParamsFormProps) => {
 		});
 		//onClickOpen();
 	}
+	/* // Универсальная фабрика обработчиков изменения поля состояния
+	const [formState, setFormState] = useState(state);
+	const createChangeHandler = useCallback(
+		<K extends keyof ArticleStateType>(key: K) =>
+			(selectedOption: ArticleStateType[K]) => {
+				setFormState((prev) => ({
+					...prev,
+					[key]: selectedOption,
+				}));
+			},
+		[]
+	); */
+
 	/*
 	Мы нажимаем на кнопке мыши левую кнопку, срабатывает обработчик события onclick, который в свою очеред вызывает нашу функцию onClickOpen 
 	в котором мы вызываем функцию setIsOpen т.к. вызывается функция setIsOpen в котором параметр функция то эта функция добавляется в очередь
@@ -106,10 +121,10 @@ export const ArticleParamsForm = (props: ArticleParamsFormProps) => {
 	*/
 	return (
 		<>
-			<ArrowButton isOpen={isOpen} onClick={onClickOpen} />
+			<ArrowButton isOpen={isMenuOpen} onClick={onClickOpen} />
 			<aside className={classNameContainer} ref={rootRef}>
 				<form className={styles.form}>
-					<Text as='h1' size={45} weight={800} uppercase dynamicLite>
+					<Text as='h1' size={45} weight={800} uppercase>
 						Задайте параметры
 					</Text>
 					<Select
@@ -117,6 +132,7 @@ export const ArticleParamsForm = (props: ArticleParamsFormProps) => {
 						options={fontFamilyOptions}
 						title='Шрифт'
 						onChange={onChangeFontFamily}
+						//	onChange={}
 					/>
 					<RadioGroup
 						selected={stateFontSize}
